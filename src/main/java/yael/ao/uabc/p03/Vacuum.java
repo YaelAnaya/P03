@@ -16,8 +16,13 @@ public class Vacuum {
 
     public Vacuum() {
         createLines();
+        vacuumsInUse = new boolean[4];
         Arrays.fill(vacuumsInUse, false);
         vacuumTimes = new int[4];
+    }
+
+    public ArrayBlockingQueue<Car>[] getVacuumLines() {
+        return vacuumLines;
     }
 
     /**
@@ -35,7 +40,9 @@ public class Vacuum {
      * @return Si se insertó el auto o no.
      * */
     public boolean addCar(Car carToAdd){
-        return vacuumLines[searchAvailableQueue()].offer(carToAdd);
+        if (carToAdd != null)
+            return vacuumLines[searchAvailableQueue()].offer(carToAdd);
+        return false;
     }
 
     /**
@@ -78,30 +85,54 @@ public class Vacuum {
     }
 
     /**
+     * Este método verifica si todas las ArrayBlockingQueue dentro del Array vacuumsLines están vacías.
+     * @return Si están vacías o no.
+     * */
+    public boolean isEmpty(){
+        int emptyLines = 0;
+        for (int i = 0; i < vacuumLines.length; i++)
+            if (vacuumLines[i].isEmpty())
+                emptyLines++;
+
+        return emptyLines == vacuumLines.length;
+    }
+
+    /**
      * Este método se encarga de aspirar todos los autos de una determinada linea de aspirado.
      * @param machineIndex El índice de la línea que se desea aspirar.
      * */
     public void vacuumCar(int machineIndex){
-        if (!vacuumLines[machineIndex].isEmpty()){
-            // Si la l
+        if (vacuumLines[machineIndex].peek() != null){
+            /* Si la máquina no está en uso, se ocupa y asigna un tiempo
+               de aspirado en base al tamaño del auto. */
             if (!vacuumsInUse[machineIndex]){
                 vacuumsInUse[machineIndex] = true;
                 setVacuumTimes(machineIndex);
+                return;
             }
+            /* Se decrementa el tiempo de las líneas ocupadas */
             vacuumTimes[machineIndex]--;
+
+            /* Se desocupa la máquina de lavado */
             if (vacuumTimes[machineIndex] == 0){
                 vacuumLines[machineIndex].peek().setServiceDone(true);
                 vacuumsInUse[machineIndex] = false;
             }
         }
-
     }
 
+    /**
+     * Este método se encarga de aspirar todos los autos de todas las líneas de aspirado.
+     * */
     public void vacuumLines(){
         for (int i = 0; i < vacuumLines.length; i++)
             vacuumCar(i);
     }
 
+    /**
+     * Este método se encarga de asignar un tiempo de aspirado a una determinada
+     * línea de aspirado en base al tamaño del auto.
+     * */
     public void setVacuumTimes(int lines) {
         switch (vacuumLines[lines].peek().getSize()) {
             case SMALL -> vacuumTimes[lines] = 5;

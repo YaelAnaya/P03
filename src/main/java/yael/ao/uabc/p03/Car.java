@@ -11,22 +11,16 @@ package yael.ao.uabc.p03;
 public class Car implements Comparable<Car>{
     private int id;
     private CarSize size;
-    private CarWashServices solicitedService;
     private boolean preferredCustomer;
     private boolean expressService;
     private boolean serviceDone;
-    private String entryTime;
-    private String exitTime;
 
-    public Car(int id, CarSize size,CarWashServices service, boolean expressService, boolean preferredCustomer) {
+    public Car(int id, CarSize size, boolean expressService, boolean preferredCustomer) {
         this.id = id;
         this.size = size;
-        this.solicitedService = service;
         this.expressService = expressService;
         this.preferredCustomer = preferredCustomer;
         this.serviceDone = false;
-        this.entryTime = "";
-        this.exitTime = "";
     }
 
     public int getId() {
@@ -45,14 +39,6 @@ public class Car implements Comparable<Car>{
         return expressService;
     }
 
-    public CarWashServices getSolicitedService() {
-        return solicitedService;
-    }
-
-    public void setSolicitedService(CarWashServices solicitedService) {
-        this.solicitedService = solicitedService;
-    }
-
     public boolean isServiceDone() {
         return serviceDone;
     }
@@ -61,35 +47,15 @@ public class Car implements Comparable<Car>{
         this.serviceDone = serviceDone;
     }
 
-    public String getEntryTime() {
-        return entryTime;
-    }
-
-    public void setEntryTime(String entryTime) {
-        this.entryTime = entryTime;
-    }
-
-    public String getExitTime() {
-        return exitTime;
-    }
-
-    public void setExitTime(String exitTime) {
-        this.exitTime = exitTime;
-    }
-
+    /**
+     * Este método no ayuda a agregar elementos a la linea de acceso, ya que
+     * en ella se utiliza una PriorityQueue.
+     *
+     * Para almacenar elemento en la PriorityQueue se toma como criterio
+     * de prioridad el atributo preferredCustomer.
+     * */
     @Override
     public int compareTo(Car carToCompare) {
         return Boolean.compare(preferredCustomer, carToCompare.preferredCustomer);
     }
-
-    @Override
-    public String toString() {
-        return "Vehiculo con " + "id: " + id +
-                "\nTamaño: " + size +
-                "\nServicio: " + solicitedService +
-                "\nCliente preferente: " + preferredCustomer +
-                "\nServicio Express: " + expressService;
-    }
-    
-    
 }
